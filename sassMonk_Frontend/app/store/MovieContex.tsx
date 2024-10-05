@@ -27,7 +27,7 @@ interface MovieContextType {
   ) => Promise<void>;
   editReview: (id: string, data: Review) => Promise<void>;
   deleteMovie: (id: number) => Promise<void>;
-  deleteReview: (id: string) => Promise<void>;
+  deleteReview: (MovieId: number, id: string) => Promise<void>;
   setMovieDetails: (id: number) => Promise<void>;
 }
 

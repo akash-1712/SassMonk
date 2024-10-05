@@ -4,6 +4,7 @@ import MovieContext from "../store/MovieContex";
 interface EditReviewFormProps {
   onClose: () => void;
   rid: string;
+  movieId: string;
   initialContent: string;
   initialRating: string;
   initialAuthor: string;
@@ -12,6 +13,7 @@ interface EditReviewFormProps {
 const EditReviewForm: React.FC<EditReviewFormProps> = ({
   onClose,
   rid,
+  movieId,
   initialContent,
   initialRating,
   initialAuthor,
@@ -31,7 +33,7 @@ const EditReviewForm: React.FC<EditReviewFormProps> = ({
       comments: string;
     } = {
       id: rid,
-      movieId: Number(rid),
+      movieId: Number(movieId),
       reviewerName: author,
       rating: Number(rating),
       comments: content,

@@ -37,8 +37,8 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
     setShowEditReviewForm(true);
   };
 
-  const onDelete = async (id: string) => {
-    await deleteReview(id);
+  const onDelete = async (MovieId: string, id: string) => {
+    await deleteReview(Number(MovieId), id);
   };
 
   return (
@@ -48,6 +48,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
           {showEditReviewForm && selectedReview && (
             <EditReviewForm
               onClose={() => setShowEditReviewForm(false)}
+              movieId={id}
               rid={selectedReview.id}
               initialContent={selectedReview.comments}
               initialRating={selectedReview.rating.toString()}
@@ -59,7 +60,10 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
             <div className="flex justify-between items-center mb-5">
               <h2 className="text-3xl font-bold">{movie.name}</h2>
               <span className="text-4xl text-purple-500">
-                {movie.averageRating !== null ? movie.averageRating : "N/A"}/10
+                {movie.averageRating !== null
+                  ? movie.averageRating.toFixed(2)
+                  : "N/A"}
+                /10
               </span>
             </div>
 
@@ -88,7 +92,7 @@ const MovieDetail: React.FC<MovieDetailProps> = ({ id }) => {
                           Edit
                         </button>
                         <button
-                          onClick={() => onDelete(review.id)}
+                          onClick={() => onDelete(id, review.id)}
                           className="text-red-500 hover:underline"
                         >
                           Delete

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode, useCallback } from "react";
 
 import axios from "axios";
 import MovieContext from "../store/MovieContex";
@@ -29,7 +29,7 @@ export function MovieContextProvider({ children }: MovieContextProviderProps) {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  useEffect(() => {
+  const fetchMovie = useCallback(function () {
     axios
       .get("https://saasmonk-test-backend.vercel.app/movies")
       .then((response) => {
@@ -39,6 +39,10 @@ export function MovieContextProvider({ children }: MovieContextProviderProps) {
         console.error(error);
       });
   }, []);
+
+  useEffect(() => {
+    fetchMovie();
+  }, [fetchMovie]);
 
   async function setMovieDetails(id: number) {
     try {
@@ -51,6 +55,7 @@ export function MovieContextProvider({ children }: MovieContextProviderProps) {
         `https://saasmonk-test-backend.vercel.app/movies/${id}/reviews`
       );
       setReviews(reviewsResponse.data);
+      console.log(id, reviewsResponse, movieResponse);
     } catch (error) {
       console.error(error);
     }
@@ -109,11 +114,13 @@ export function MovieContextProvider({ children }: MovieContextProviderProps) {
 
   async function addReview(data: Review) {
     try {
-      const response = await axios.post(
+      await axios.post(
         "https://saasmonk-test-backend.vercel.app/reviews",
         data
       );
-      setReviews((prevReviews) => [...prevReviews, response.data]);
+
+      fetchMovie();
+      setMovieDetails(data.movieId);
     } catch (error) {
       console.error(error);
     }
@@ -121,26 +128,22 @@ export function MovieContextProvider({ children }: MovieContextProviderProps) {
 
   async function editReview(id: string, data: Review) {
     try {
-      const response = await axios.put(
+      await axios.put(
         `https://saasmonk-test-backend.vercel.app/reviews/${id}`,
         data
       );
-      setReviews((prevReviews) =>
-        prevReviews.map((review) => (review.id === id ? response.data : review))
-      );
+      setMovieDetails(data.movieId);
     } catch (error) {
       console.error(error);
     }
   }
 
-  async function deleteReview(id: string) {
+  async function deleteReview(MovieId: number, id: string) {
     try {
       await axios.delete(
         `https://saasmonk-test-backend.vercel.app/reviews/${id}`
       );
-      setReviews((prevReviews) =>
-        prevReviews.filter((review) => review.id !== id)
-      );
+      setMovieDetails(Number(MovieId));
     } catch (error) {
       console.error(error);
     }
